@@ -77,26 +77,73 @@ pip3 install -r requirements.txt
 
 **推荐直接使用方案 A**，因为这是一台专门跑 OpenClaw 的服务器，不会有其他 Python 冲突。
 
-### 第四步：重启并清理缓存 (关键!)
-OpenClaw 有时会缓存旧的技能列表。请执行以下命令确保它加载新技能：
+### 第四步：重启服务 (关键步骤)
+**因为找不到 `openclaw.service`，您很可能是通过 Docker 运行的 OpenClaw。**
 
+请尝试以下命令：
+
+**方案 A：如果是 Docker 运行 (最常见)**
 ```bash
-# 1. 停止 OpenClaw
-sudo systemctl stop openclaw
+# 1. 查看正在运行的容器
+docker ps
 
-# 2. 清理 OpenClaw 缓存 (可选，如果还是不行的话)
-# rm -rf ~/.openclaw/cache/*
+# 2. 如果看到名为 'openclaw' 或类似的容器，请重启它
+docker restart openclaw
+# 或者
+docker restart openclaw-server
 
-# 3. 启动 OpenClaw
-sudo systemctl start openclaw
-
-# 4. 实时查看日志 (重要！看有没有报错)
-journalctl -u openclaw -f
+# 3. 查看 Docker 日志
+docker logs -f openclaw --tail 100
 ```
 
-**检查日志时，您应该看到类似 `Loaded skill: ashare_trader` 的字样。** 如果看到 Error，请把报错发给我。
+**方案 B：如果是直接运行的 Python 进程**
+```bash
+# 1. 查找进程 ID
+ps -ef | grep python | grep openclaw
 
-## 4. 模型配置指南 (OpenClaw)
+# 2. 杀掉进程 (假设 PID 是 12345)
+# kill -9 12345
+
+# 3. 重新启动 (需要知道您最初是怎么启动的，通常是 startup.sh 或者 python -m ...)
+# 这一步比较危险，如果您不确定启动命令，请优先尝试 Docker 方案。
+```
+
+**如何确认技能已加载？**
+在日志中（`docker logs` 或终端输出），您应该能看到类似：
+`[SkillManager] Loaded skill: ashare_trader`
+`[SkillManager] Registered triggers: ['大盘怎么样', ...]`
+
+如果没有看到这些日志，说明 OpenClaw 根本没有去读 `~/.openclaw/workspace/skills` 目录。
+请检查 Docker 的挂载配置，确保 `-v ~/.openclaw:/root/.openclaw` 是存在的。
+
+### 常见问题排查
+
+#### 1. 技能没显示在列表中？
+**这很正常！** "已安装技能"列表通常只显示从应用商店安装的技能。本地侧载（Sideload）的技能可能不会出现在那里，但这不影响使用。
+
+**请直接在聊天框测试：**
+发送："**今天大盘怎么样**"
+如果机器人回复了行情数据，说明安装成功！
+
+#### 2. 权限问题 (最常见原因)
+您当前是在 `/root` 目录下操作。如果是 Docker 运行的 OpenClaw，容器内的非 root 用户可能**没有权限读取 `/root` 目录下的文件**。
+
+**请执行以下命令修复权限：**
+```bash
+# 1. 确保所有用户都能读取技能文件
+chmod -R 755 ~/.openclaw/workspace/skills/ashare-trader
+
+# 2. (如果还在报错) 尝试给 /root 目录增加执行权限 (仅限测试环境)
+# chmod +x /root
+```
+
+#### 3. 参考其他技能
+如果还是不行，请看看隔壁 `weather` 技能是怎么写的，对比一下结构：
+```bash
+ls -R ~/.openclaw/workspace/skills/weather
+cat ~/.openclaw/workspace/skills/weather/SKILL.md
+```
+确保我们的 `SKILL.md` 格式和它保持一致。
 在腾讯云 OpenClaw 的模型选择界面，您会看到以下选项，请按需选择：
 
 - **DeepSeek Chat** (= **DeepSeek-V3**)

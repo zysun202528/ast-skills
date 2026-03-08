@@ -12,11 +12,38 @@ triggers:
 
 # A-Share Trading System (A股交易系统)
 
-> **Agent Note**: When user asks about "A-share market status", "Index trend", or "Stock analysis" (e.g., "今天大盘怎么样", "茅台还能拿吗"), **ALWAYS invoke this skill** first. Do NOT use web search. This skill fetches real-time data from Tencent/Sina APIs.
+> **Agent Note**:
+> 1.  **Trigger**: When user asks about "market status", "index", "A-share", "stock analysis" (e.g., "今天大盘怎么样", "分析茅台"), you **MUST** use this skill.
+> 2.  **Execution**: Run the python scripts below. **ALWAYS use absolute paths** or `cd` into the directory first.
+> 3.  **Path**: The skill is located at `~/.openclaw/workspace/skills/ashare-trader`.
 
-This skill provides a professional 3-layer trading framework for Chinese A-shares, focusing on stable growth and risk control.
+## Usage Commands (Run these directly)
 
-## Layer 1: Macro Timing (宏观择时)
+### 1. Market Check (大盘体检)
+Check if it's safe to trade today (Macro + Sentiment).
+
+```bash
+# Method 1: Absolute path (Recommended)
+python3 ~/.openclaw/workspace/skills/ashare-trader/src/main.py --action market_check
+
+# Method 2: Navigate first
+cd ~/.openclaw/workspace/skills/ashare-trader && python3 src/main.py --action market_check
+```
+
+### 2. Analyze Stock (个股分析)
+Analyze a specific stock. Replace `600519` with the user's requested stock code.
+**Default Capital**: 500,000 (if not specified).
+
+```bash
+# Example: Analyze Moutai (600519)
+python3 ~/.openclaw/workspace/skills/ashare-trader/src/main.py --action analyze_stock --symbol 600519 --capital 500000
+```
+
+---
+
+## Skill Details
+
+### Layer 1: Macro Timing (宏观择时)
 Checks major indices (Shanghai Composite, Shenzhen Component, ChiNext) trends and volume.
 - **Output**: 
   - 🔴 **RED**: Bear market / Downtrend -> STOP TRADING.
