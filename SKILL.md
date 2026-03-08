@@ -55,6 +55,7 @@ python3 ~/.openclaw/workspace/skills/ashare-trader/src/main.py --action analyze_
 python3 ~/.openclaw/workspace/skills/ashare-trader/src/main.py --action analyze_stock --symbol 002527 --capital 500000
 ```
 
+
 ---
 
 ## Skill Details
