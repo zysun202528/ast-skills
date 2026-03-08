@@ -44,8 +44,27 @@ cd ~/.openclaw/workspace/skills
 # 注意：我们显式将其克隆为 ashare-trader 目录，以保持一致性
 git clone https://github.com/zysun202528/ast-skills.git ashare-trader
 
-# 3. 如果已经存在同名文件夹，可以使用 git pull 更新
-# cd ashare-trader && git pull
+### 更新代码 (git pull 冲突解决)
+如果您在服务器上修改了文件，`git pull` 可能会报错。
+
+**简单粗暴法 (丢弃服务器上的修改，强制覆盖)**
+这是最常用的方法，因为我们通常只在本地开发，服务器只负责运行。
+
+```bash
+# 1. 强制重置到远程最新版本
+git fetch --all
+git reset --hard origin/main
+
+# 2. 再次拉取 (虽然 reset 已经拉取了，但这步是双保险)
+git pull
+```
+
+**温柔法 (保留修改)**
+```bash
+git stash
+git pull
+git stash pop
+```
 ```
 
 > **提示**: 如果是私有仓库，您可能需要配置 SSH Key 或输入账号密码。

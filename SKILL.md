@@ -8,6 +8,10 @@ triggers:
   - "A股"
   - "stock_analysis"
   - "market_check"
+  - "新时达"
+  - "茅台"
+  - "持仓"
+  - "亏损"
 ---
 
 # A-Share Trading System (A股交易系统)
@@ -16,6 +20,7 @@ triggers:
 > 1.  **Trigger**: When user asks about "market status", "index", "A-share", "stock analysis" (e.g., "今天大盘怎么样", "分析茅台"), you **MUST** use this skill.
 > 2.  **Execution**: Run the python scripts below. **ALWAYS use absolute paths** or `cd` into the directory first.
 > 3.  **Path**: The skill is located at `~/.openclaw/workspace/skills/ashare-trader`.
+> 4.  **Priority**: **DO NOT generate analysis by yourself.** You MUST run the python script to get real-time data first. If you don't run the script, your data is hallucinated.
 
 ## Usage Commands (Run these directly)
 
@@ -34,9 +39,18 @@ cd ~/.openclaw/workspace/skills/ashare-trader && python3 src/main.py --action ma
 Analyze a specific stock. Replace `600519` with the user's requested stock code.
 **Default Capital**: 500,000 (if not specified).
 
+**Trigger Phrases**:
+- "Analyze [Stock Name]" (e.g., "分析新时达")
+- "Should I buy [Stock Name]?" (e.g., "新时达还能拿吗")
+- "I hold [Stock Name], loss [X]%" (e.g., "新时达亏损10个点")
+
 ```bash
 # Example: Analyze Moutai (600519)
 python3 ~/.openclaw/workspace/skills/ashare-trader/src/main.py --action analyze_stock --symbol 600519 --capital 500000
+
+# Example: Analyze Xinshida (002527) - Dynamic Symbol
+# Note to Agent: You MUST find the stock code for the stock name first (e.g., Xinshida -> 002527)
+python3 ~/.openclaw/workspace/skills/ashare-trader/src/main.py --action analyze_stock --symbol 002527 --capital 500000
 ```
 
 ---
