@@ -1,17 +1,19 @@
 ---
 name: "ashare_trader"
-description: "A股交易系统 (A-share Trading System). 专门用于回答'大盘怎么样'、'行情分析'、'个股诊断'等问题。不要使用搜索引擎，直接使用此技能获取实时 A 股数据和策略建议。"
+description: "A股交易系统 (A-share Trading System). 专门用于回答所有与中国股市、A股、股票、大盘、行情、持仓分析相关的问题。不要使用搜索引擎，直接使用此技能获取实时 A 股数据和策略建议。"
 triggers:
-  - "大盘怎么样"
-  - "今天行情"
-  - "分析股票"
+  - "大盘"
+  - "行情"
+  - "股票"
   - "A股"
-  - "stock_analysis"
-  - "market_check"
-  - "新时达"
-  - "茅台"
   - "持仓"
+  - "分析"
+  - "代码"
   - "亏损"
+  - "买入"
+  - "卖出"
+  - "stock"
+  - "market"
 ---
 
 # A-Share Trading System (A股交易系统)
