@@ -37,10 +37,12 @@ sudo apt install python3 python3-pip -y
 
 ```bash
 # 1. 进入 OpenClaw 的 skills 目录
-cd ~/openclaw/skills
+# 注意：OpenClaw 的默认 skills 目录通常在 ~/.openclaw/workspace/skills
+cd ~/.openclaw/workspace/skills
 
-# 2. 克隆您的代码仓库 (请替换为您的仓库地址)
-git clone https://github.com/your-username/ashare-trader.git
+# 2. 克隆您的代码仓库 (已替换为您提供的地址)
+# 注意：我们显式将其克隆为 ashare-trader 目录，以保持一致性
+git clone https://github.com/zysun202528/ast-skills.git ashare-trader
 
 # 3. 如果已经存在同名文件夹，可以使用 git pull 更新
 # cd ashare-trader && git pull
@@ -49,17 +51,50 @@ git clone https://github.com/your-username/ashare-trader.git
 > **提示**: 如果是私有仓库，您可能需要配置 SSH Key 或输入账号密码。
 
 ### 第三步：安装依赖
-进入目录并安装库：
+**注意**：在较新的 Ubuntu (23.04+) 上，为了保护系统环境，默认禁止直接使用 pip。
+
+您有两种选择：
+
+**方案 A: 强制安装到系统 (最简单，适合独占服务器)**
 ```bash
 cd ashare-trader
-pip3 install -r requirements.txt
+pip3 install -r requirements.txt --break-system-packages
 ```
 
-### 第四步：测试运行
+**方案 B: 使用虚拟环境 (最规范)**
 ```bash
-# 测试大盘体检
-python3 src/main.py --action market_check
+cd ashare-trader
+# 1. 创建虚拟环境
+python3 -m venv venv
+
+# 2. 激活环境并安装
+source venv/bin/activate
+pip3 install -r requirements.txt
+
+# 3. 注意：如果使用虚拟环境，运行 OpenClaw 时需要指定 Python 路径
+# 或者在 systemd 服务文件中修改 ExecStart
 ```
+
+**推荐直接使用方案 A**，因为这是一台专门跑 OpenClaw 的服务器，不会有其他 Python 冲突。
+
+### 第四步：重启并清理缓存 (关键!)
+OpenClaw 有时会缓存旧的技能列表。请执行以下命令确保它加载新技能：
+
+```bash
+# 1. 停止 OpenClaw
+sudo systemctl stop openclaw
+
+# 2. 清理 OpenClaw 缓存 (可选，如果还是不行的话)
+# rm -rf ~/.openclaw/cache/*
+
+# 3. 启动 OpenClaw
+sudo systemctl start openclaw
+
+# 4. 实时查看日志 (重要！看有没有报错)
+journalctl -u openclaw -f
+```
+
+**检查日志时，您应该看到类似 `Loaded skill: ashare_trader` 的字样。** 如果看到 Error，请把报错发给我。
 
 ## 4. 模型配置指南 (OpenClaw)
 在腾讯云 OpenClaw 的模型选择界面，您会看到以下选项，请按需选择：
