@@ -272,6 +272,38 @@ class MarketAnalyzer:
         
         return sentiment_score, mood
 
+    def analyze_sector(self, sector_name, market_status="GREEN", sentiment_score=50):
+        """
+        Analyze a specific sector using its ETF as proxy.
+        """
+        print(f"\n=== Sector Analysis: {sector_name} ===")
+        # 1. Map sector name to ETF code
+        sector_map = self.loader.get_sector_map()
+        
+        target_code = None
+        target_name = ""
+        # Try direct match
+        for code, name in sector_map.items():
+            if sector_name in name or sector_name in code:
+                target_code = code
+                target_name = name
+                print(f"Matched Sector ETF: {name} ({code})")
+                break
+        
+        if not target_code:
+            print(f"Sector '{sector_name}' not found in monitored list.")
+            print("Available sectors:", ", ".join([v.split(' ')[0] for v in sector_map.values()]))
+            return
+
+        # 2. Analyze the ETF
+        # Treat it like a stock analysis
+        # Strip prefix for compatibility if needed, but loader handles it.
+        # However, analyze_stock_strategy might expect just the number for display? 
+        # It passes to loader, which handles it.
+        # But for display "Layer 3: ... ({symbol})", it's fine.
+        
+        self.analyze_stock_strategy(target_code, 100000, market_status=market_status, sentiment_score=sentiment_score)
+
     def analyze_stock_strategy(self, symbol, capital, risk_per_trade=0.01, market_status="GREEN", sentiment_score=50):
         """
         Layer 3: Individual Stock Strategy & Risk Control
@@ -412,8 +444,9 @@ class MarketAnalyzer:
 
 def main():
     parser = argparse.ArgumentParser(description="A-Share Trading System")
-    parser.add_argument("--action", type=str, default="market_check", choices=["market_check", "analyze_stock"], help="Action to perform")
+    parser.add_argument("--action", type=str, default="market_check", choices=["market_check", "analyze_stock", "analyze_sector"], help="Action to perform")
     parser.add_argument("--symbol", type=str, help="Stock symbol for analysis (e.g. 600519)")
+    parser.add_argument("--sector", type=str, help="Sector name for analysis (e.g. 电力)")
     parser.add_argument("--capital", type=float, default=100000, help="Total Capital")
     
     args = parser.parse_args()
@@ -436,6 +469,15 @@ def main():
         sentiment_score, mood = analyzer.get_market_sentiment()
         
         analyzer.analyze_stock_strategy(args.symbol, args.capital, market_status=traffic_light, sentiment_score=sentiment_score)
+    elif args.action == "analyze_sector":
+        if not args.sector:
+            print("Please provide a sector name with --sector")
+            return
+        
+        traffic_light = analyzer.get_market_traffic_light()
+        sentiment_score, mood = analyzer.get_market_sentiment()
+        
+        analyzer.analyze_sector(args.sector, market_status=traffic_light, sentiment_score=sentiment_score)
 
 if __name__ == "__main__":
     main()

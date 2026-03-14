@@ -14,12 +14,17 @@ triggers:
   - "卖出"
   - "stock"
   - "market"
+  - "板块"
+  - "sector"
+  - "电力"
+  - "新能源"
+  - "AI"
 ---
 
 # A-Share Trading System (A股交易系统)
 
 > **Agent Note**:
-> 1.  **Trigger**: When user asks about "market status", "index", "A-share", "stock analysis" (e.g., "今天大盘怎么样", "分析茅台"), you **MUST** use this skill.
+> 1.  **Trigger**: When user asks about "market status", "index", "A-share", "stock analysis", "sector analysis" (e.g., "今天大盘怎么样", "分析茅台", "电力板块"), you **MUST** use this skill.
 > 2.  **Execution**: Run the python scripts below. **ALWAYS use absolute paths** or `cd` into the directory first.
 > 3.  **Path**: The skill is located at `~/.openclaw/workspace/skills/ashare-trader`.
 > 4.  **Priority**: **DO NOT generate analysis by yourself.** You MUST run the python script to get real-time data first. If you don't run the script, your data is hallucinated.
@@ -53,6 +58,20 @@ python3 ~/.openclaw/workspace/skills/ashare-trader/src/main.py --action analyze_
 # Example: Analyze Xinshida (002527) - Dynamic Symbol
 # Note to Agent: You MUST find the stock code for the stock name first (e.g., Xinshida -> 002527)
 python3 ~/.openclaw/workspace/skills/ashare-trader/src/main.py --action analyze_stock --symbol 002527 --capital 500000
+```
+
+### 3. Analyze Sector (板块分析)
+Analyze a specific sector (e.g., Power, AI, New Energy).
+**Trigger Phrases**:
+- "Analyze [Sector Name] sector" (e.g., "分析电力板块")
+- "How is [Sector] doing?" (e.g., "新能源怎么样")
+
+```bash
+# Example: Analyze Power Sector (电力)
+python3 ~/.openclaw/workspace/skills/ashare-trader/src/main.py --action analyze_sector --sector "电力"
+
+# Example: Analyze AI Sector (人工智能)
+python3 ~/.openclaw/workspace/skills/ashare-trader/src/main.py --action analyze_sector --sector "人工智能"
 ```
 
 

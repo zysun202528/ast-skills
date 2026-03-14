@@ -1,35 +1,22 @@
 import requests
 
-def debug_stock_data(symbol):
-    # Test Sector ETFs
-    # 512880: Securities (Broker)
-    # 512690: Liquor (Alcohol) - Wait, is there a Liquor ETF? 
-    # Let's try:
-    # sh512880 (Securities)
-    # sh512480 (Semi)
-    # sh516160 (New Energy)
-    # sh512010 (Pharma)
-    # sh510150 (Consumer)
-    # sh512800 (Bank)
+def test_eastmoney_sector():
+    # Test getting data for a sector (e.g., Power/Electricity)
+    # 561560: Power Construction ETF
+    url = "http://qt.gtimg.cn/q=sh561560,sz159611"
     
-    etfs = [
-        "sh512880", # Securities
-        "sh512480", # Semi
-        "sh516160", # New Energy
-        "sh512010", # Pharma
-        "sh510150", # Consumer
-        "sh512800"  # Bank
-    ]
-    
-    url = f"http://qt.gtimg.cn/q={','.join(etfs)}"
-    
-    print(f"Fetching ETFs: {url}...")
     try:
-        resp = requests.get(url, timeout=5)
-        print("Response text (raw):")
-        print(resp.text)
+        resp = requests.get(url)
+        print(f"Sector URL: {url}")
+        print(f"Response: {resp.text}")
     except Exception as e:
         print(f"Error: {e}")
 
+def test_northbound_eastmoney():
+    # Try to find Northbound funds data
+    # Often it's under a special code.
+    # Let's try to get the list of concepts to see if we can find Northbound.
+    pass
+
 if __name__ == "__main__":
-    debug_stock_data("600519")
+    test_eastmoney_sector()

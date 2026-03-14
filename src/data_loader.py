@@ -240,13 +240,8 @@ class TencentDataLoader:
                     
         return breadth_data
 
-    def get_sector_etf_performance(self):
-        """
-        Get performance of key sector ETFs to identify leading sectors.
-        Returns a list of dicts with sector info.
-        """
-        # Key Sector ETFs (Top Liquid & Representative)
-        sectors = {
+    def get_sector_map(self):
+        return {
             'sh512880': '证券 (Securities)',
             'sh512480': '半导体 (Semiconductor)',
             'sh516160': '新能源 (New Energy)',
@@ -254,13 +249,24 @@ class TencentDataLoader:
             'sh510150': '消费 (Consumer)',
             'sh512800': '银行 (Bank)',
             'sh512660': '军工 (Military)',
-            'sh512690': '酒 (Liquor)'
+            'sh512690': '酒 (Liquor)',
+            'sh561560': '电力 (Power)',
+            'sh515070': '人工智能 (AI)',
+            'sh515050': '通信 (Communication/CPO)',
+            'sh512980': '传媒 (Media)',
+            'sh512200': '房地产 (Real Estate)',
+            'sh515220': '煤炭 (Coal)',
+            'sz159995': '芯片 (Chips)',
+            'sz159939': '信息技术 (IT)'
         }
-        
-        # We can use get_realtime_snapshot but need to handle full codes (sh/sz prefix already included)
-        # get_realtime_snapshot adds prefix automatically, so we strip it if passing to it?
-        # No, get_realtime_snapshot expects '600519' and adds prefix.
-        # But here we have specific prefixes. Let's use direct URL construction or helper.
+
+    def get_sector_etf_performance(self):
+        """
+        Get performance of key sector ETFs to identify leading sectors.
+        Returns a list of dicts with sector info.
+        """
+        # Key Sector ETFs (Top Liquid & Representative)
+        sectors = self.get_sector_map()
         
         # Let's construct URL manually to be safe with ETF codes
         codes_str = ",".join(sectors.keys())
